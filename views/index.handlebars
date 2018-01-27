@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    
+</head>
+
+<body>
+    <script src=""></script>
+    <h3> Flash messages in Express 4 </h3>
+    <p><a href="http://localhost:3000/express-flash">Click here</a> for a flash message using the express-flash module.</p>
+    <p><a href="http://localhost:3000/session-flash">Click here</a> for a flash message using custom middleware</p>
+    <p>Refresh to clear the flash message.</p>
+
+    {{#if expressFlash}}
+    <p class="alert alert-success"><strong>FLASH!</strong> {{ expressFlash }}</p>
+    {{/if}}
+
+    {{#if sessionFlash.message}}
+    <div class="{{ sessionFlash.type }}">
+    <p class="alert alert-success"><strong >FLASH!</strong> {{ sessionFlash.message }}</p>
+    </div>
+    {{/if}}
+</body>
+</html>
