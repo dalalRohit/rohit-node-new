@@ -9,7 +9,8 @@ const flash = require('connect-flash');
 const session = require('express-session');
 const bcrypt=require('bcryptjs');
 const passport = require('passport');
-const hbs=require('express-handlebars');
+const ehbs=require('express-handlebars');
+const hbs=require('hbs');
 const _ =require('lodash');
 const { check, } = require('express-validator/check');
 const { matchedData, sanitize } = require('express-validator/filter');
@@ -37,7 +38,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.use('/public',express.static(__dirname+'/public'));
 
 // view engine
-//app.engine('hbs',hbs({extname:'hbs',defaultLayout:'layout',lauoutsDir: __dirname+'/views/layouts/'}));
+hbs.registerPartials(__dirname+'/views/partials');
+// app.engine('hbs',hbs({extname:'hbs',layoutsDir: __dirname+'/views/layouts/'}));
 app.set('view engine', 'hbs');
 
 
@@ -130,8 +132,8 @@ app.post('/users/register',[
         user.save()
         .then( (user) => {
           //res.send('YOU NOW CAN LOGIN');
-          res.send(user);
-          //return user.generateAuthToken();
+          // res.send(user);
+          return user.generateAuthToken();
         })
         .then( (token) => {
           res.header('x-auth',token).send(user);
