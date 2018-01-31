@@ -17,6 +17,7 @@ const { matchedData, sanitize } = require('express-validator/filter');
 const { body,validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 var {mongoose}=require('./db/db');
+var {authenticate}=require('./middleware/authenticate');
 
 // const config = require('./config/database');
 var app=express();
@@ -108,7 +109,7 @@ app.post('/users/register',[
     if (!errors.isEmpty())
     {   //res.send(errors);
         // console.log(Object.keys(errors));
-        res.status(422).json({errors:errors.mapped()});
+        //res.status(422).json({errors:errors.mapped()});
     }
     const loginid=req.body.loginid;
     const email=req.body.email;
@@ -136,6 +137,8 @@ app.post('/users/register',[
           return user.generateAuthToken();
         })
         .then( (token) => {
+          //redirecting users to login page after succesful registration
+          //res.redirect('/users/login').header('x-auth',token);
           res.header('x-auth',token).send(user);
         })
         .catch( (err) => {
@@ -152,15 +155,20 @@ app.post('/users/login',(req,res)=> {
   var password=req.body.password;
 
    User.findByCred(id,password).then( (user) => {
-    res.status(200).send('LoggedIn....');
+    //res.status(200).send('LoggedIn....');
+    console.log("user loggedIN");
     res.redirect('/users/teachers');
-    res.render('teachers');
   }).catch( (err) => {
     res.status(400).send("No user found! Check credentials once! ");
   });
 
 });
 
+
+//private routes
+app.get('/users/me',authenticate,(req,res)=> {
+  res.send(req.user);
+});
 
 
 app.listen(3000,() => {

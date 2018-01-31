@@ -78,6 +78,30 @@ var UserSchema=new mongoose.Schema({
    });
 }
 
+//model methods
+UserSchema.statics.findByToken=function(token) {
+  var User=this;
+
+  var decoded;
+
+  try
+  {
+    decoded=jwt.verify(token,'rohit_dalal');
+  }
+  catch (e)
+  {
+    return Promise.reject();
+  }
+
+  //nested query
+  return User.findOne({
+    '_id':decoded._id,
+    'tokens.token':token,
+    'tokens.access':'auth'
+  });
+
+}
+
 // User Schema
 var User=mongoose.model('User',UserSchema);
 
