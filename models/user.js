@@ -61,7 +61,7 @@ var UserSchema=new mongoose.Schema({
  UserSchema.statics.findByCred= function (loginid,password) {
    var User=this;
    return User.findOne({loginid}).then( (user) => {
-     console.log(`LoginID: ${loginid} Password:${password}`);
+     //console.log(`LoginID: ${loginid} Password:${password}`);
 
      return new Promise( (resolve,reject) => {
        bcrypt.compare(password,user.password, (err,res) => {

@@ -32,7 +32,9 @@ router.get('/login',(req,res)=> {
 
 // GET /users/teachers
 router.get('/teachers',(req,res)=> {
-  res.render('teachers',{user:user});
+  res.render('teachers',{
+    pageTitle:"Teachers page"
+  });
 });
 
 module.exports=router;

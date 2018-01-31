@@ -84,6 +84,13 @@ app.get('/register',(req,res)=>{
         pageTitle:"Register page"
     });
 });
+
+// logout
+app.get('/logout', function(req, res){
+  req.logout();
+  //req.flash('success', 'You are logged out');
+  res.redirect('/users/login');
+});
 // //POST users/register
 app.post('/users/register',[
     // var loginid=req.body.loginid;
@@ -120,6 +127,7 @@ app.post('/users/register',[
     //NO VALIDATION ERRORS
     var user=new User(body);
 
+    //password hashing
     bcrypt.genSalt(10,(err,salt) => {
       bcrypt.hash(user.password,salt,(err,hash) => {
 
@@ -127,9 +135,10 @@ app.post('/users/register',[
         {
           return console.log(err);
         }
-
+        //changing plain text password of user doc to newly hashed password
         user.password=hash;
 
+        //saving user with hashed password
         user.save()
         .then( (user) => {
           //res.send('YOU NOW CAN LOGIN');
@@ -139,7 +148,7 @@ app.post('/users/register',[
         .then( (token) => {
           //redirecting users to login page after succesful registration
           //res.redirect('/users/login').header('x-auth',token);
-          res.header('x-auth',token).send(user);
+           res.header('x-auth',token).send(user);
         })
         .catch( (err) => {
           res.status(400).send(err);
@@ -153,16 +162,17 @@ app.post('/users/register',[
 app.post('/users/login',(req,res)=> {
   var id=req.body.loginid;
   var password=req.body.password;
-
-   User.findByCred(id,password).then( (user) => {
+  //assigning fond user to 'user' to pass it along with the route
+  var user= User.findByCred(id,password).then( (user) => {
     //res.status(200).send('LoggedIn....');
-    console.log("user loggedIN");
-    res.redirect('/users/teachers');
+    //console.log("user loggedIN");
+    res.render('teachers',{success:true,user:user});
   }).catch( (err) => {
     res.status(400).send("No user found! Check credentials once! ");
   });
 
 });
+
 
 
 //private routes
