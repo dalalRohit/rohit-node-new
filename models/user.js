@@ -78,7 +78,7 @@ var UserSchema=new mongoose.Schema({
    });
 }
 
-//model methods
+//model methods for jwt
 UserSchema.statics.findByToken=function(token) {
   var User=this;
 

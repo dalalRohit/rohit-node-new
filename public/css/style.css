@@ -1,5 +1,10 @@
 
 #main
-{ font-family: monospace;
-  margin-top: 90px;
+{ margin-top: 90px;
+  font-family: monospace;
+}
+
+.alert
+{
+  width: 60%;
 }
