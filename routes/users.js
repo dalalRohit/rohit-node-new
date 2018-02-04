@@ -20,6 +20,8 @@ var {authenticate}=require('./../middleware/authenticate');
 //app setup
 var app=express();
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use('/public',express.static(__dirname+'/public'));
+
 
 //Models
 let User=require('../models/user');
@@ -30,7 +32,9 @@ app.use(bodyParser.json());
 
 //GET /
 app.get('/',(req,res) => {
-  res.render('dashboard',{success:true});
+  res.render('dashboard',{success:true,
+  pageTitle:"Dashboard",
+  user:res.locals.user});
 });
 
 //GET /users/login
@@ -40,11 +44,6 @@ app.get('/login',(req,res)=>{
     });
 });
 
-// //dashboard page
-// app.get('/dashboard',authenticate,(req,res) => {
-//     //res.render('dashboard');
-//     res.send(req.user);
-// });
 
 //POST /users/login
 app.post('/login',(req,res)=> {
@@ -53,11 +52,15 @@ app.post('/login',(req,res)=> {
 
   //assigning found user to 'user' to pass it along with the route
   var user= User.findByCred(id,password).then( (user) => {
-    //res.status(200).send('LoggedIn....');
-    //console.log("user loggedIN");
-    res.render('dashboard',{user:req.user,success:true,pageTitle:"Dashboard",msg:"You're now logged in!"});
+
+    return user.generateAuthToken().then( (token) => {
+      res.header('x-auth',token);
+      res.render('dashboard',{success:true,msg:"You're now logged in!"})
+    });
+    res.render('dashboard',{success:true,msg:"You're now logged in!"});
+
   }).catch( (err) => {
-    res.render('login',{error:"No user found! Check credentials once!"});
+    res.status(400).render('login',{error:"No user found! Check credentials once!"});
   });
 
 });
@@ -69,6 +72,11 @@ app.get('/register',(req,res)=>{
     });
 });
 
+// GET /users/teachers
+app.get('/teachers',(req,res) => {
+  res.render('teachers',{success:true,
+  pageTitle:"Teachers page"});
+});
 //POST users/register
 app.post('/register',[
     check('loginid','LoginID must be atleast 10 chars long').isLength({min:10}),
@@ -118,7 +126,9 @@ app.post('/register',[
         .then( (token) => {
           //redirecting users to login page after succesful registration
           //res.redirect('/users/login').header('x-auth',token);
-           res.header('x-auth',token).send(user);
+           res.header('x-auth',token);
+           res.render('login',{msg:"You're now registered!"});
+
         })
         .catch( (err) => {
           res.status(400).send(err);
@@ -133,24 +143,55 @@ app.get('*',(req,res,next) => {
   next();
 });
 
-// logout
-app.get('/logout', function(req, res){
-  req.logout();
-//   req.session.sessionFlash = {
-//     type: 'success',
-//     message: 'You are logged out!'
-// };
+
+app.get('/logout',authenticate,(req,res)=> {
+  
+  //udemy logout logic
+  req.user.removeToken(req.token).then( () => {
+    res.status(200).send();
+  }).catch( () => {
+    res.status(400).send();
+  });
+
   res.redirect('/users/login');
+});
+// logout
+app.delete('/logout',authenticate, function(req, res){
+//   req.logout();
+// //   req.session.sessionFlash = {
+// //     type: 'success',
+// //     message: 'You are logged out!'
+// // };
+//    res.redirect('/users/login');
+
+//udemy logout logic
+req.user.removeToken(req.token).then( () => {
+  res.status(200).send();
+}).catch( () => {
+  res.status(400).send();
+});
+
 });
 
 
 //GET /users/feedback
-app.get('/feedback',(req,res) => {
+app.get('/feedback',authenticate,(req,res) => {
   res.render('feedback',{
     pageTitle:"Feedback page",
     success:true,
     user:req.user
   });
+});
+
+// DELETE /users/me/token
+app.delete('/me/token',authenticate,(req,res)=> {
+
+  req.user.removeToken(req.token).then( () => {
+    res.status(200).send();
+  }).catch( () => {
+    res.status(400).send();
+  });
+
 });
 
 module.exports=app;

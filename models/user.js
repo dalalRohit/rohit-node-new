@@ -60,8 +60,13 @@ var UserSchema=new mongoose.Schema({
 //for login process
  UserSchema.statics.findByCred= function (loginid,password) {
    var User=this;
+
    return User.findOne({loginid}).then( (user) => {
      //console.log(`LoginID: ${loginid} Password:${password}`);
+     if(!user)
+     {
+       return Promise.reject();
+     }
 
      return new Promise( (resolve,reject) => {
        bcrypt.compare(password,user.password, (err,res) => {
@@ -78,6 +83,16 @@ var UserSchema=new mongoose.Schema({
    });
 }
 
+//
+UserSchema.methods.removeToken= function (token) {
+  var user=this;
+
+  return user.update({
+    $pull:{
+      tokens:{token}
+    }
+  });
+};
 //model methods for jwt
 UserSchema.statics.findByToken=function(token) {
   var User=this;
