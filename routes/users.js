@@ -6,6 +6,8 @@ const expressValidator = require('express-validator');
 const hbs=require('hbs');
 const _ =require('lodash');
 const bcrypt=require('bcryptjs');
+const jwt=require('jsonwebtoken');
+const axios=require('axios');
 
 //const router=express.Router();
 
@@ -25,44 +27,20 @@ app.use('/public',express.static(__dirname+'/public'));
 
 //Models
 let User=require('../models/user');
+let Teacher=require('../models/teacher');
 
 //body-parser middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-//GET /
-app.get('/',(req,res) => {
-  res.render('dashboard',{success:true,
-  pageTitle:"Dashboard",
-  user:res.locals.user});
-});
 
+
+//############################## PAGE GETTERS ##################################
 //GET /users/login
 app.get('/login',(req,res)=>{
     res.render('login',{
         pageTitle:"Login page"
     });
-});
-
-
-//POST /users/login
-app.post('/login',(req,res)=> {
-  var id=req.body.loginid;
-  var password=req.body.password;
-
-  //assigning found user to 'user' to pass it along with the route
-  var user= User.findByCred(id,password).then( (user) => {
-
-    return user.generateAuthToken().then( (token) => {
-      res.header('x-auth',token);
-      res.render('dashboard',{success:true,msg:"You're now logged in!"})
-    });
-    res.render('dashboard',{success:true,msg:"You're now logged in!"});
-
-  }).catch( (err) => {
-    res.status(400).render('login',{error:"No user found! Check credentials once!"});
-  });
-
 });
 
 //GET /users/register
@@ -72,11 +50,47 @@ app.get('/register',(req,res)=>{
     });
 });
 
-// GET /users/teachers
-app.get('/teachers',(req,res) => {
-  res.render('teachers',{success:true,
-  pageTitle:"Teachers page"});
+//############################PRIVATE ROUTES #################################
+//GET /
+app.get('/',authenticate,(req,res) => {
+  res.render('dashboard',{success:true,
+  pageTitle:"Dashboard",
+  user:req.user});
 });
+
+// GET /users/teachers
+app.get('/teachers',authenticate,(req,res) => {
+  res.render('teachers',{success:true,
+  pageTitle:"Teachers page",
+  user:req.user});
+});
+
+//GET /users/logout
+app.get('/logout',authenticate,(req,res)=> {
+
+  //udemy logout logic
+  req.user.removeToken(req.token).then( () => {
+    res.status(200).send();
+  }).catch( () => {
+    res.status(400).send();
+  });
+
+  res.redirect('/users/login');
+});
+
+//GET /users/feedback
+app.get('/feedback',authenticate,(req,res) => {
+
+
+  res.render('feedback',{
+    pageTitle:"Feedback page",
+    success:true,
+    user:req.user,
+
+  });
+});
+
+//######################### PROCEDURAL ROUTES #####################
 //POST users/register
 app.post('/register',[
     check('loginid','LoginID must be atleast 10 chars long').isLength({min:10}),
@@ -102,6 +116,7 @@ app.post('/register',[
     const password2=req.body.password2;
 
     var body=_.pick(req.body,['loginid','email','password']);
+    
     //NO VALIDATION ERRORS
     var user=new User(body);
 
@@ -137,33 +152,44 @@ app.post('/register',[
     });
 });
 
-//global user variable
-app.get('*',(req,res,next) => {
-  res.locals.user=req.user || null;
-  next();
-});
 
+//POST /users/login
+app.post('/login',(req,res)=> {
+  var id=req.body.loginid;
+  var password=req.body.password;
 
-app.get('/logout',authenticate,(req,res)=> {
-  
-  //udemy logout logic
-  req.user.removeToken(req.token).then( () => {
-    res.status(200).send();
-  }).catch( () => {
-    res.status(400).send();
+  //assigning found user to 'user' to pass it along with the route
+  var user= User.findByCred(id,password).then( (user) => {
+
+    return user.generateAuthToken().then( (token) => {
+      res.header('x-auth',token);
+
+      axios.defaults.baseURL = 'http://localhost:3000';
+      axios.defaults.headers.common['Authorization']=token;
+
+      //splitting of roll no in dept,div,year,no
+      var roll=user.splitRoll(user.loginid);
+
+      // var teachers=Teacher.findByYearAndDiv();
+      // res.send(teachers);
+
+      //Info passed - {user},{roll},{teachers}
+      res.render('dashboard',{success:true,msg:"You're now logged in!",user:user.loginid,roll})
+
+    });
+  }).catch( (err) => {
+    res.status(400).render('login',{error:"No user found! Check credentials once!"});
   });
 
-  res.redirect('/users/login');
-});
-// logout
-app.delete('/logout',authenticate, function(req, res){
-//   req.logout();
-// //   req.session.sessionFlash = {
-// //     type: 'success',
-// //     message: 'You are logged out!'
-// // };
-//    res.redirect('/users/login');
 
+});
+
+
+
+
+
+// DELETE /users/logout
+app.delete('/logout',authenticate, function(req, res){
 //udemy logout logic
 req.user.removeToken(req.token).then( () => {
   res.status(200).send();
@@ -174,14 +200,7 @@ req.user.removeToken(req.token).then( () => {
 });
 
 
-//GET /users/feedback
-app.get('/feedback',authenticate,(req,res) => {
-  res.render('feedback',{
-    pageTitle:"Feedback page",
-    success:true,
-    user:req.user
-  });
-});
+
 
 // DELETE /users/me/token
 app.delete('/me/token',authenticate,(req,res)=> {

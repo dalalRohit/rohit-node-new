@@ -4,8 +4,9 @@ const validator=require('validator');
 const jwt=require('jsonwebtoken');
 const _ = require('lodash');
 const {ObjectID} = require('mongodb');
+const moment=require('moment');
 
-
+//UserSchema
 var UserSchema=new mongoose.Schema({
     loginid:{
         type: String,
@@ -37,8 +38,14 @@ var UserSchema=new mongoose.Schema({
       token:{
         type:String,
         required:true
-      }
-    }]
+       },
+      // created:{
+      //   type:String,
+      //   required:true
+      // }
+
+  }]
+
 });
 
 
@@ -48,9 +55,15 @@ var UserSchema=new mongoose.Schema({
      var access='auth';
 
      var token=jwt.sign({_id:user._id.toHexString(),access},'rohit_dalal').toString();
+
+     var time=moment().format('dddd, MMMM Do YYYY, h:mm:ss a');
+
      //don't use user.tokens.push(). It's of older version
      //from UDEMY Q&A.
      user.tokens=user.tokens.concat({access,token});
+
+     //user.tokens.created=moment().format('dddd, MMMM Do YYYY, h:mm:ss a');
+
 
      return user.save().then( () => {
        return token;
@@ -83,7 +96,7 @@ var UserSchema=new mongoose.Schema({
    });
 }
 
-//
+//for DELETE /users/token/me
 UserSchema.methods.removeToken= function (token) {
   var user=this;
 
@@ -93,6 +106,7 @@ UserSchema.methods.removeToken= function (token) {
     }
   });
 };
+
 //model methods for jwt
 UserSchema.statics.findByToken=function(token) {
   var User=this;
@@ -117,6 +131,26 @@ UserSchema.statics.findByToken=function(token) {
 
 }
 
+
+//instance method for splitting roll no
+UserSchema.methods.splitRoll = function (roll)
+{
+  //16101b0035
+  var year=roll.slice(0,2);
+  var dept=roll.slice(2,5);
+  var div=roll[5];
+  var no=roll.slice(6,11);
+
+//  var years={'FE','SE','TE','BE'};
+  var depts={};
+  var divs={}
+
+  var rollNo={year:year,dept:dept,div:div,no:no};
+
+  return rollNo;
+
+
+};
 // User Schema
 var User=mongoose.model('User',UserSchema);
 
