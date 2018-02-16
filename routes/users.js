@@ -50,45 +50,6 @@ app.get('/register',(req,res)=>{
     });
 });
 
-//############################PRIVATE ROUTES #################################
-//GET /
-app.get('/',authenticate,(req,res) => {
-  res.render('dashboard',{success:true,
-  pageTitle:"Dashboard",
-  user:req.user});
-});
-
-// GET /users/teachers
-app.get('/teachers',authenticate,(req,res) => {
-  res.render('teachers',{success:true,
-  pageTitle:"Teachers page",
-  user:req.user});
-});
-
-//GET /users/logout
-app.get('/logout',authenticate,(req,res)=> {
-
-  //udemy logout logic
-  req.user.removeToken(req.token).then( () => {
-    res.status(200).send();
-  }).catch( () => {
-    res.status(400).send();
-  });
-
-  res.redirect('/users/login');
-});
-
-//GET /users/feedback
-app.get('/feedback',authenticate,(req,res) => {
-
-
-  res.render('feedback',{
-    pageTitle:"Feedback page",
-    success:true,
-    user:req.user,
-
-  });
-});
 
 //######################### PROCEDURAL ROUTES #####################
 //POST users/register
@@ -116,7 +77,7 @@ app.post('/register',[
     const password2=req.body.password2;
 
     var body=_.pick(req.body,['loginid','email','password']);
-    
+
     //NO VALIDATION ERRORS
     var user=new User(body);
 
@@ -164,17 +125,21 @@ app.post('/login',(req,res)=> {
     return user.generateAuthToken().then( (token) => {
       res.header('x-auth',token);
 
-      axios.defaults.baseURL = 'http://localhost:3000';
-      axios.defaults.headers.common['Authorization']=token;
-
       //splitting of roll no in dept,div,year,no
       var roll=user.splitRoll(user.loginid);
+      var dept=roll.dept;
+      //console.log(dept);
 
-      // var teachers=Teacher.findByYearAndDiv();
-      // res.send(teachers);
+      //res.status(200).redirect('/users/');
+      var teachers=Teacher.findByDept(dept).then( (teachers) => {
+        //console.log(JSON.stringify(teachers,undefined,2));
+        
+        res.render('dashboard',{success:true,msg:"You're now logged in!",pageTitle:'Dashboard',user:user.loginid,roll,teachers:JSON.stringify(teachers,undefined,5)})
 
-      //Info passed - {user},{roll},{teachers}
-      res.render('dashboard',{success:true,msg:"You're now logged in!",user:user.loginid,roll})
+      }).catch( (err) => {
+        res.send().status(400);
+      });
+      //Info passed - {user},{roll},{teachers}--NOT THE CORRECT WAY
 
     });
   }).catch( (err) => {
@@ -183,10 +148,6 @@ app.post('/login',(req,res)=> {
 
 
 });
-
-
-
-
 
 // DELETE /users/logout
 app.delete('/logout',authenticate, function(req, res){
@@ -199,9 +160,49 @@ req.user.removeToken(req.token).then( () => {
 
 });
 
+//############################PRIVATE ROUTES #################################
+//GET /
+app.get('/',authenticate,(req,res) => {
+  res.render('dashboard',{success:true,
+  pageTitle:"Dashboard",
+  user:req.user});
+});
+
+// GET /users/teachers
+app.get('/teachers',authenticate,(req,res) => {
+  res.render('teachers',{success:true,
+  pageTitle:"Teachers page",
+  user:req.user});
+});
+
+//GET /users/logout
+app.get('/logout',authenticate,(req,res)=> {
+
+  //udemy logout logic
+  req.user.removeToken(req.token).then( () => {
+    res.status(200).send();
+  }).catch( () => {
+    res.status(400).send();
+  });
+
+  res.redirect('/users/login');
+});
+
+//GET /users/feedback
+app.get('/feedback',authenticate,(req,res) => {
+
+
+  res.render('feedback',{
+    pageTitle:"Feedback page",
+    success:true,
+    user:req.user,
+
+  });
+});
 
 
 
+//EXTRA UDEMY ROUTE
 // DELETE /users/me/token
 app.delete('/me/token',authenticate,(req,res)=> {
 

@@ -11,14 +11,13 @@ var authenticate=function (req,res,next)
     if(!user)
     {
       return Promise.reject();
-
     }
 
     //modifying req object
     req.user=user;
     req.token=token;
     next();
-    
+
   }).catch( (e) => {
     res.status(401).send("Authentication required!");
 

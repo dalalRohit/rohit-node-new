@@ -17,6 +17,10 @@ var TeacherSchema=new mongoose.Schema({
 			type:String,
 			required:true
 		},
+    code:{
+      type:Number,
+      required:true
+    },
 		designation:{
 			type:String,
 			required:true
@@ -47,13 +51,12 @@ var TeacherSchema=new mongoose.Schema({
 });
 
 
-TeacherSchema.statics.findByYearAndDiv= function ()
+TeacherSchema.statics.findByDept= function (dept)
 {
-	var Teacher=this;
-
-	return Teacher.find({dept:'inft'}).toArray().then( (teachers) => {
-		console.log(teachers);
-	} , (err) => {
-		console.log(err);
-	});
+  return Teacher.find({code:dept});
 };
+
+// User Schema
+var Teacher=mongoose.model('Teacher',TeacherSchema);
+
+module.exports=Teacher;
