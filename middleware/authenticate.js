@@ -2,6 +2,8 @@ var User=require('./../models/user');
 
 var authenticate=function (req,res,next)
 {
+
+
   var token=req.header('x-auth');
 
   //calling findByToken of user.js (model)
@@ -16,6 +18,9 @@ var authenticate=function (req,res,next)
     //modifying req object
     req.user=user;
     req.token=token;
+    req.roll=user.splitRoll(user.loginid);
+    req.loggedin=true;
+    console.log(req);
     next();
 
   }).catch( (e) => {

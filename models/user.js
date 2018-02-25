@@ -132,18 +132,6 @@ UserSchema.statics.findByToken=function(token) {
 }
 
 
-UserSchema.statics.findTokenByUserId= function (id) {
-  var User=this;
-
-   User.findOne({id})
-    .then( (user) => {
-      console.log(user);
-    }).catch( (err) => {
-      console.log('');
-    });
-
-};
-
 //instance method for splitting roll no
 UserSchema.methods.splitRoll = function (roll)
 {
@@ -160,7 +148,6 @@ UserSchema.methods.splitRoll = function (roll)
   var rollNo={year:year,dept:dept,div:div,no:no};
 
   return rollNo;
-
 
 };
 // User Schema

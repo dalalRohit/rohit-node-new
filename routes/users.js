@@ -102,8 +102,8 @@ app.post('/register',[
         .then( (token) => {
           //redirecting users to login page after succesful registration
           //res.redirect('/users/login').header('x-auth',token);
-           res.header('x-auth',token);
-           res.render('login',{msg:"You're now registered!"});
+          res.render('login',{success:true,msg:"You're now registered!"});
+
 
         })
         .catch( (err) => {
@@ -128,18 +128,16 @@ app.post('/login',(req,res)=> {
       //splitting of roll no in dept,div,year,no
       var roll=user.splitRoll(user.loginid);
       var dept=roll.dept;
-      //console.log(dept);
 
-      //res.status(200).redirect('/users/');
-      var teachers=Teacher.findByDept(dept).then( (teachers) => {
-        //console.log(JSON.stringify(teachers,undefined,2));
-        
-        res.render('dashboard',{success:true,msg:"You're now logged in!",pageTitle:'Dashboard',user:user.loginid,roll,teachers:JSON.stringify(teachers,undefined,5)})
-
+      //finding teachers according to dept code and rendering it on dashboard
+      Teacher.findByDept(dept).then( (teachers) => {
+        res.status(200).render('dashboard',{success:true,msg:"You're now logged in!",user,roll,teachers});
       }).catch( (err) => {
-        res.send().status(400);
+        res.status(400).send();
       });
-      //Info passed - {user},{roll},{teachers}--NOT THE CORRECT WAY
+
+      //res.render('dashboard',{success:true,msg:"You're now logged in!",user,roll});
+
 
     });
   }).catch( (err) => {
@@ -165,7 +163,8 @@ req.user.removeToken(req.token).then( () => {
 app.get('/',authenticate,(req,res) => {
   res.render('dashboard',{success:true,
   pageTitle:"Dashboard",
-  user:req.user});
+  user:req.user,
+  roll:req.roll});
 });
 
 // GET /users/teachers

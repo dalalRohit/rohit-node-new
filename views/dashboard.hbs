@@ -1,4 +1,3 @@
-
 <div class="container-fluid" id="main">
   <!-- flash for login -->
   {{#if msg}}
@@ -7,10 +6,10 @@
   </div>
   {{/if}}
 
-<h4>  Dashboard {{user}} </h4>
+<h4>  Dashboard {{user.loginid}} </h4>
 <h4>Year: {{roll.year}} Dept: {{roll.dept}} Div: {{roll.div}} RollNo: {{roll.no}}</h4>
 
-<h5>Showing teachers of {{roll.year}} {{roll.dept}} {{roll.div}}</h5>
+<h5>Showing teachers of dept code {{roll.dept}}</h5>
 
 {{#if teachers}}
   {{teachers}}
