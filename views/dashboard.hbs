@@ -10,9 +10,26 @@
 <h4>Year: {{roll.year}} Dept: {{roll.dept}} Div: {{roll.div}} RollNo: {{roll.no}}</h4>
 
 <h5>Showing teachers of dept code {{roll.dept}}</h5>
+<div class="alert alert-info">
+  <b>Note: </b> <h5>Click on the teacher's name to give feedback!</h5>
+</div>
 
-{{#if teachers}}
-  {{teachers}}
-{{/if}}
+{{#each teachers}}
+<div class="teachers">
+  <ol>
+    <li>
+      <a href="/users/give-feedback">{{this}}</a>
+    </li>
+  </ol>
+</div>
 
+{{else}}
+  <p class="empty">No content</p>
+{{/each}}
+<!-- <ul>
+  <li>
+    <a href="/users/give-feedback">Teacher 1</a>
+
+  </li>
+</ul> -->
 </div>

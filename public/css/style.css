@@ -8,3 +8,29 @@
 {
   width: 60%;
 }
+
+.teachers
+{
+  background-color: #ffe5e5;
+  padding: 10px;
+  font-size: 1.5em;
+  line-height: 1.5em;
+  width: 60%;
+  max-width: 100%;
+
+}
+
+.teachers ol li{
+  list-style-type: none;
+}
+.teachers li a
+{
+  text-decoration: none;
+  color: black;
+}
+
+.teachers li a:hover
+{
+  text-decoration:underline;
+  color:#909115;
+}

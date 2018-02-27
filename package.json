@@ -31,6 +31,7 @@
 		"passport": "^0.3.2",
 		"passport-local": "^1.0.0",
 		"pug": "^2.0.0-rc.1",
+		"request": "^2.83.0",
 		"validator": "^9.2.0"
 	}
 }

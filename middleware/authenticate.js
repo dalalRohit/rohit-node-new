@@ -1,9 +1,8 @@
 var User=require('./../models/user');
+var Teacher=require('./../models/teacher');
 
 var authenticate=function (req,res,next)
 {
-
-
   var token=req.header('x-auth');
 
   //calling findByToken of user.js (model)
@@ -20,7 +19,10 @@ var authenticate=function (req,res,next)
     req.token=token;
     req.roll=user.splitRoll(user.loginid);
     req.loggedin=true;
-    console.log(req);
+    //req.teachers=Teacher.findByDept(roll.dept);
+
+
+
     next();
 
   }).catch( (e) => {

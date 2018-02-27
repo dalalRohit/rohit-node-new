@@ -8,6 +8,7 @@ const _ =require('lodash');
 const bcrypt=require('bcryptjs');
 const jwt=require('jsonwebtoken');
 const axios=require('axios');
+const request=require('request');
 
 //const router=express.Router();
 
@@ -49,6 +50,8 @@ app.get('/register',(req,res)=>{
         pageTitle:"Register page"
     });
 });
+
+
 
 
 //######################### PROCEDURAL ROUTES #####################
@@ -125,18 +128,29 @@ app.post('/login',(req,res)=> {
     return user.generateAuthToken().then( (token) => {
       res.header('x-auth',token);
 
+
       //splitting of roll no in dept,div,year,no
       var roll=user.splitRoll(user.loginid);
       var dept=roll.dept;
 
-      //finding teachers according to dept code and rendering it on dashboard
+      //res.status(200).send();
+      // //finding teachers according to dept code and rendering it on dashboard
       Teacher.findByDept(dept).then( (teachers) => {
-        res.status(200).render('dashboard',{success:true,msg:"You're now logged in!",user,roll,teachers});
+        // console.log(teachers);
+        var fac=[];
+        for(var i=0;i<teachers.length;i++)
+        {
+          fac.push(teachers[0].name);
+        }
+
+        // console.log(fac.toString());
+        res.status(200).render('dashboard',{success:true,pageTitle:"Dashboard",msg:"You're now logged in!",user,roll,teachers:fac});
       }).catch( (err) => {
         res.status(400).send();
       });
 
       //res.render('dashboard',{success:true,msg:"You're now logged in!",user,roll});
+
 
 
     });
@@ -158,20 +172,35 @@ req.user.removeToken(req.token).then( () => {
 
 });
 
+// var passToken= function(req,res,next) {
+//   // console.log(req);
+//   // console.log("ROHIT");
+//   req.headers={
+//     'x-auth':''
+//   };
+//   next();
+// };
 //############################PRIVATE ROUTES #################################
 //GET /
 app.get('/',authenticate,(req,res) => {
   res.render('dashboard',{success:true,
   pageTitle:"Dashboard",
   user:req.user,
-  roll:req.roll});
+  roll:req.roll,
+  teachers:req.teachers});
+});
+
+//GET /users/give-feedback
+app.get('/give-feedback',(req,res) => {
+  res.render('feed',{success:true,user:req.user,pageTitle:"Submit feedback page"});
 });
 
 // GET /users/teachers
 app.get('/teachers',authenticate,(req,res) => {
   res.render('teachers',{success:true,
   pageTitle:"Teachers page",
-  user:req.user});
+  user:req.user,
+  teachers:req.teachers});
 });
 
 //GET /users/logout
@@ -195,6 +224,7 @@ app.get('/feedback',authenticate,(req,res) => {
     pageTitle:"Feedback page",
     success:true,
     user:req.user,
+    teachers:req.teachers
 
   });
 });
