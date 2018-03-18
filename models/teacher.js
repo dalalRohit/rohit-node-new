@@ -11,7 +11,7 @@ var TeacherSchema=new mongoose.Schema({
         type: String,
         required: true,
         minlength:10,
-        
+
     },
 		dept:{
 			type:String,
@@ -53,7 +53,14 @@ var TeacherSchema=new mongoose.Schema({
 
 TeacherSchema.statics.findByDept= function (dept)
 {
-  return Teacher.find({code:dept});
+    return Teacher.find({code:dept});
+};
+
+TeacherSchema.statics.findByDept1= function (dept)
+{
+    var promise= Teacher.find({code:dept}).exec();
+    // res.send(promise);
+    return promise;
 };
 
 // User Schema

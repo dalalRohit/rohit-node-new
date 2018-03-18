@@ -81,16 +81,6 @@ app.get('/', function( req, res ) {
     res.render('index', { expressFlash: req.flash('success'), sessionFlash: res.locals.sessionFlash });
 });
 
-
-
-
-
-//private routes
-app.get('/users/me',authenticate,(req,res)=> {
-  res.send(req.user);
-});
-
-
 app.listen(3000,() => {
 	console.log('Connected on port 3000!');
 });

@@ -1,4 +1,4 @@
-<div class="container-fluid" id="main">
+<div class="container" id="main">
   <!-- flash for login -->
   {{#if msg}}
   <div class="alert alert-success">
@@ -14,22 +14,22 @@
   <b>Note: </b> <h5>Click on the teacher's name to give feedback!</h5>
 </div>
 
-{{#each teachers}}
-<div class="teachers">
-  <ol>
-    <li>
-      <a href="/users/give-feedback">{{this}}</a>
-    </li>
-  </ol>
-</div>
+{{#if roll}}
+<h2>Roll details:</h2>
+  {{#each roll}}
+    {{this}}
+  {{/each}}
+{{/if}}
 
-{{else}}
-  <p class="empty">No content</p>
-{{/each}}
-<!-- <ul>
-  <li>
-    <a href="/users/give-feedback">Teacher 1</a>
-
-  </li>
-</ul> -->
+{{#if token}}
+  {{token}}
+{{/if}}
+<!-- SHOWING TEACHERS ACCORDING TO DEPARTMENT -->
+{{#if teachers}}
+  <ul class="teachers">
+    {{#each teachers}}
+      <li> <a href="/users/give-feedback">{{this}}</a> </li>
+    {{/each}}
+  </ul>
+{{/if}}
 </div>

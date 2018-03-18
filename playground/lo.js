@@ -41,3 +41,8 @@ var teachers= [{ _id: '5a92540c7f98bd20ec566684',
     designation: 'Assistant professor',
     email: 'sample-teacher5@vit.edu.in',
     multiple: 0 } ];
+
+    console.log(teachers[0]);
+
+
+    console.log(fac);

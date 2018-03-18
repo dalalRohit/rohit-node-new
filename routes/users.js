@@ -9,6 +9,8 @@ const bcrypt=require('bcryptjs');
 const jwt=require('jsonwebtoken');
 const axios=require('axios');
 const request=require('request');
+const passport = require('passport');
+const flash    = require('connect-flash');
 
 //const router=express.Router();
 
@@ -35,6 +37,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 
+// // required for passport
+// app.use(session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
+// app.use(passport.initialize());
+// app.use(passport.session()); // persistent login sessions
+// app.use(flash()); // use connect-flash for flash messages stored in session
+
 
 //############################## PAGE GETTERS ##################################
 //GET /users/login
@@ -50,6 +58,13 @@ app.get('/register',(req,res)=>{
         pageTitle:"Register page"
     });
 });
+
+// //GET /404
+// app.get('*',(req,res) => {
+//   res.render('404',{
+//     pageTitle:"404! Page not found!"
+//   });
+// });
 
 
 
@@ -105,6 +120,7 @@ app.post('/register',[
         .then( (token) => {
           //redirecting users to login page after succesful registration
           //res.redirect('/users/login').header('x-auth',token);
+          res.header('x-auth',token);
           res.render('login',{success:true,msg:"You're now registered!"});
 
 
@@ -136,20 +152,33 @@ app.post('/login',(req,res)=> {
       //res.status(200).send();
       // //finding teachers according to dept code and rendering it on dashboard
       Teacher.findByDept(dept).then( (teachers) => {
-        // console.log(teachers);
+        //console.log(teachers);
         var fac=[];
+
         for(var i=0;i<teachers.length;i++)
         {
-          fac.push(teachers[0].name);
+          fac.push(teachers[i].name);
         }
 
-        // console.log(fac.toString());
-        res.status(200).render('dashboard',{success:true,pageTitle:"Dashboard",msg:"You're now logged in!",user,roll,teachers:fac});
+         console.log('Token here',token);
+         //console.log(fac);
+         //res.redirect('/users/');
+
+
+        res.status(200).render('dashboard',{
+          success:true,
+          pageTitle:"Dashboard",
+          msg:"You're now logged in!",
+          user,
+          roll,
+          teachers:fac,
+          token
+        });
+
       }).catch( (err) => {
         res.status(400).send();
       });
 
-      //res.render('dashboard',{success:true,msg:"You're now logged in!",user,roll});
 
 
 
@@ -172,27 +201,36 @@ req.user.removeToken(req.token).then( () => {
 
 });
 
-// var passToken= function(req,res,next) {
-//   // console.log(req);
-//   // console.log("ROHIT");
+// var passToken=function (req,res,next)
+// {
 //   req.headers={
-//     'x-auth':''
+//     'x-auth':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1YWE3YTViZDVjM2ZiMDI4Y2MzNmQ5ODciLCJhY2Nlc3MiOiJhdXRoIiwiaWF0IjoxNTIwOTM2Mzk5fQ.I4cQ8QFvgR9FTE3e_2zpgfNFD-Qv0zKuCkAxxjsWtJU'
 //   };
+//
 //   next();
-// };
+// }
 //############################PRIVATE ROUTES #################################
 //GET /
 app.get('/',authenticate,(req,res) => {
+  console.log(req.body.token);
   res.render('dashboard',{success:true,
   pageTitle:"Dashboard",
   user:req.user,
   roll:req.roll,
-  teachers:req.teachers});
+  teachers:req.teachers,
+  }
+  );
 });
 
 //GET /users/give-feedback
-app.get('/give-feedback',(req,res) => {
-  res.render('feed',{success:true,user:req.user,pageTitle:"Submit feedback page"});
+app.get('/give-feedback',authenticate,(req,res) => {
+  res.render('feed',{
+    success:true,
+    user:req.user,
+    roll:req.roll,
+    pageTitle:"Submit feedback page",
+    teachers:req.teachers
+  });
 });
 
 // GET /users/teachers
@@ -241,6 +279,14 @@ app.delete('/me/token',authenticate,(req,res)=> {
     res.status(400).send();
   });
 
+});
+
+//private routes
+app.get('/me',authenticate,(req,res)=> {
+  res.send(req.user.tokens[1].token);
+  req.headers={
+    'x-auth':req.user.tokens[1].token
+  };
 });
 
 module.exports=app;
