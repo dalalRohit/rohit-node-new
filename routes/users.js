@@ -184,7 +184,10 @@ app.post('/login',(req,res)=> {
 
     });
   }).catch( (err) => {
-    res.status(400).render('login',{error:"No user found! Check credentials once!"});
+    res.status(400).render('login',{
+      pageTitle:"Login page",
+      error:"No user found! Check credentials once!"
+    });
   });
 
 

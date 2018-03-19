@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 // const mongoose = require('mongoose');
 const {ObjectID} = require('mongodb');
-
+const config=require('./config/config.json');
 const bodyParser = require('body-parser');
 const expressValidator = require('express-validator');
 const flash = require('connect-flash');
@@ -47,8 +47,11 @@ app.use(bodyParser.json());
 
 //GET /
 app.get('/', (req,res) => {
-    res.render('index');
+    res.render('index',{
+      pageTitle:"v-Feedback"
+    });
 });
+
 
 //passport config
 require('./config/passport')(passport);
@@ -57,32 +60,9 @@ require('./config/passport')(passport);
 app.use(passport.initialize());
 app.use(passport.session());
 
-// initialize express-session to allow us track the logged-in user across sessions.
-app.use(session({
-    key: 'user_sid',
-    secret: 'rohit_dalal',
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-        expires: 600000
-    }
-}));
-
-// Custom flash middleware -- from Ethan Brown's book, 'Web Development with Node & Express'
-app.use(function(req, res, next){
-    // if there's a flash message in the session request, make it available in the response, then delete it
-    res.locals.sessionFlash = req.session.sessionFlash;
-    delete req.session.sessionFlash;
-    next();
-});
-
-// Route that incorporates flash messages from either req.flash(type) or res.locals.flash
-app.get('/', function( req, res ) {
-    res.render('index', { expressFlash: req.flash('success'), sessionFlash: res.locals.sessionFlash });
-});
 
 app.listen(3000,() => {
-	console.log('Connected on port 3000!');
+	console.log(`Server up and running on PORT 3000`);
 });
 
 module.exports=app;
