@@ -36,14 +36,6 @@ let Teacher=require('../models/teacher');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-
-// // required for passport
-// app.use(session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
-// app.use(passport.initialize());
-// app.use(passport.session()); // persistent login sessions
-// app.use(flash()); // use connect-flash for flash messages stored in session
-
-
 //############################## PAGE GETTERS ##################################
 //GET /users/login
 app.get('/login',(req,res)=>{
@@ -58,16 +50,6 @@ app.get('/register',(req,res)=>{
         pageTitle:"Register page"
     });
 });
-
-// //GET /404
-// app.get('*',(req,res) => {
-//   res.render('404',{
-//     pageTitle:"404! Page not found!"
-//   });
-// });
-
-
-
 
 //######################### PROCEDURAL ROUTES #####################
 //POST users/register
@@ -112,22 +94,19 @@ app.post('/register',[
 
         //saving user with hashed password
         user.save()
-        .then( (user) => {
-          //res.send('YOU NOW CAN LOGIN');
-          // res.send(user);
-          return user.generateAuthToken();
-        })
-        .then( (token) => {
-          //redirecting users to login page after succesful registration
-          //res.redirect('/users/login').header('x-auth',token);
-          res.header('x-auth',token);
-          res.render('login',{success:true,msg:"You're now registered!"});
-
-
-        })
-        .catch( (err) => {
-          res.status(400).send(err);
-        });
+          .then( (user) => {
+            return user.generateAuthToken();
+          })
+          .then( (token) => {
+            res.header('x-auth',token);
+            res.render('login',{
+              pageTitle:"Login page",
+              success:true,
+              msg:"You're now registered!"});
+          })
+          .catch( (err) => {
+            res.status(400).send("Something went wrong!!");
+          });
       })
     });
 });

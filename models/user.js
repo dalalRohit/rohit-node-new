@@ -54,7 +54,7 @@ var UserSchema=new mongoose.Schema({
      var user=this;
      var access='auth';
 
-     var token=jwt.sign({_id:user._id.toHexString(),access},process.env.JWT_SECRET).toString();
+     var token=jwt.sign({_id:user._id.toHexString(),access},'rohit_dalal').toString();
 
      var time=moment().format('dddd, MMMM Do YYYY, h:mm:ss a');
 
@@ -115,7 +115,7 @@ UserSchema.statics.findByToken=function(token) {
 
   try
   {
-    decoded=jwt.verify(token,process.env.JWT_SECRET);
+    decoded=jwt.verify(token,'rohit_dalal');
   }
   catch (e)
   {
