@@ -19,6 +19,8 @@ var {authenticate}=require('./middleware/authenticate');
 // const config = require('./config/database');
 var app=express();
 
+// FOR HEROKU
+const port=process.env.PORT || 3000;
 
 //##########################DATABASE############################
 // mongoose.connect(config.database);
@@ -61,8 +63,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-app.listen(3000,() => {
-	console.log(`Server up and running on PORT 3000`);
+app.listen(port,() => {
+	console.log(`Server up and running on PORT ${port}!`);
 });
 
 module.exports=app;
