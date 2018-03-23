@@ -1,4 +1,4 @@
-<div class="container" id="main">
+<div class="container-fluid" id="main">
   <!-- flash for login -->
   {{#if msg}}
   <div class="alert alert-success">
@@ -14,22 +14,67 @@
   <b>Note: </b> <h5>Click on the teacher's name to give feedback!</h5>
 </div>
 
-{{#if roll}}
+<!-- {{#if roll}}
 <h2>Roll details:</h2>
   {{#each roll}}
     {{this}}
   {{/each}}
-{{/if}}
+{{/if}} -->
 
 {{#if token}}
   {{token}}
 {{/if}}
+
+
+
 <!-- SHOWING TEACHERS ACCORDING TO DEPARTMENT -->
 {{#if teachers}}
-  <ul class="teachers">
-    {{#each teachers}}
-      <li> <a href="/users/give-feedback">{{this}}</a> </li>
-    {{/each}}
-  </ul>
+  <h1>Your teachers:</h1>
+  <div class="teachers">
+    <div class="names">
+      {{#each teachers}}
+        <li> <a href="/users/give-feedback" onclick="">{{this}}</a> </li> <br />
+      {{/each}}
+    </div>
+    <div class="subjects">
+      {{#each subjects}}
+        <li> {{this}} </li> <br />
+      {{/each}}
+    </div>
+    <div class="designation">
+      {{#each designation}}
+        <li> {{this}} </li> <br />
+      {{/each}}
+    </div>
+  </div>
 {{/if}}
+<!--
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Subject</th>
+        <th>Designation</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{teachers}}</td>
+        <td>Doe</td>
+        <td>john@example.com</td>
+      </tr>
+      <tr>
+        <td>Mary</td>
+        <td>Moe</td>
+        <td>mary@example.com</td>
+      </tr>
+      <tr>
+        <td>July</td>
+        <td>Dooley</td>
+        <td>july@example.com</td>
+      </tr>
+    </tbody>
+  </table>
+  -->
+
 </div>

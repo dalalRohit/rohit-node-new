@@ -46,7 +46,11 @@ var TeacherSchema=new mongoose.Schema({
 		designation:{
 			type:String,
 			required:true
-		}
+		},
+    subject:{
+      type:"String",
+      required:true
+    }
 
 });
 

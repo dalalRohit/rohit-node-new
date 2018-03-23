@@ -4,29 +4,33 @@
   font-family: monospace;
 }
 
-
-.teachers
-{
-  background-color: #ffe5e5;
-  padding: 10px;
-  font-size: 1.5em;
-  line-height: 1.5em;
-  width: 60%;
-  max-width: 100%;
-
-}
-
-.teachers  li{
+li{
   list-style-type: none;
 }
-.teachers li a
+
+.names,.subjects,.designation
 {
-  text-decoration: none;
-  color: black;
+  padding: 18px;
+}
+.teachers
+{ width: 100%;
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  flex-direction: row;
+  background-color: #f2f2f2;
+  font-size: 1.7em;
+  color: #7c635c;
 }
 
-.teachers li a:hover
+
+.teachers  a
 {
-  text-decoration:underline;
-  color:#909115;
+  color: inherit;
+  text-decoration: none;
+}
+.teachers  a:hover
+{
+  color: pink;
+  text-decoration: none;
 }

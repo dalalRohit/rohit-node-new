@@ -34,10 +34,10 @@ var authenticate=function (req,res,next)
     function assign(teachers)
     {
       req.teachers=teachers;
-      console.log("inside assign function:",req.teachers);
+      //console.log("inside assign function:",req.teachers);
     }
 
-    console.log(`req.teachers: ${req.teachers}`);
+    //console.log(`req.teachers: ${req.teachers}`);
 
 
 
