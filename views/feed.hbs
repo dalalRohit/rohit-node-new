@@ -7,7 +7,7 @@
   </div>
 {{/if}}
 
-{{#if user}}
+<!-- {{#if user}}
   {{user}}
 {{/if}}
 
@@ -16,19 +16,25 @@
   {{#each roll}}
     {{this}}
   {{/each}}
-{{/if}}
+{{/if}} -->
 
 {{#if teachers}}
   {{teachers}}
 {{/if}}
 
-<div class="container" id="main">
+<div class="container-fluid" id="main">
 <div class="col-md-5">
     <div class="form-area">
 
         <form role="form" method="post" action="/users/submit">
         <br style="clear:both">
-          {{msg}}
+
+          {{#if msg}}
+            <div class="alert alert-info">
+              {{msg}}
+            </div>
+          {{/if}}
+
             <h3 style="margin-bottom: 25px; text-align: center;">Feedback Form</h3>
 
             <div class="form-group">
@@ -46,7 +52,7 @@
 
     				<div class="form-group">
               <label>Name of the teacher:</label>
-						   <input type="text" class="form-control" id="name" name="name" value={{teacher}} required>
+						   <input type="text" class="form-control" id="name" name="name" >
 					  </div>
 
           <div class="form-group">
@@ -56,29 +62,43 @@
 
           <div class="form-group">
             <label>Designation</label>
-            <input type="text" class="form-control" id="des" name="des" placeholder="Designation" required>
+            <input type="text" class="form-control" id="des" name="des" value="Designation" required>
 
           </div>
 
-        <div class="form-group">
+        <div class="form-group" >
           <label>Teaching quality</label>
-          <input type="text" class="form-control" id="tq" name="tq" placeholder="Teaching quality" required>
-
+          <div class="form-group" >
+              <select class="form-control" id="tqselect">
+                <option value="Excellent" selected="selected">Excellent</option>
+                <option value="Very Good">Very Good</option>
+                <option value="Good">Good</option>
+                <option value="Poor">Poor</option>
+              </select>
+          </div>
         <hr />
 
         <div class="form-group">
           <label>Punctuality</label>
-          <input type="text" class="form-control" id="pun" name="pun" placeholder="Punctuality" required>
-
+          <!-- <input type="text" class="form-control" id="pun" name="pun" placeholder="Punctuality" required> -->
+          <div class="form-group" >
+              <select class="form-control" id="punselect">
+                <option value="Excellent">Excellent</option>
+                <option value="Very Good">Very Good</option>
+                <option value="Good">Good</option>
+                <option value="Poor">Poor</option>
+              </select>
+          </div>
         <hr />
 
       </div>
 
+      <button type="submit" id="submit" formaction="/users/verify" name="verify" class="btn btn-primary pull-right">Verify Form</button> <br />
 
 
 
+      <button type="submit" id="verify" formaction="/users/submit" onclick="display()" id="submit" name="submit" class="btn btn-primary pull-right" disabled>Submit Form</button>
 
-        <button type="submit" id="submit" name="submit" class="btn btn-primary pull-right">Submit Form</button>
         </form>
     </div>
 </div>
@@ -87,10 +107,13 @@
 </div>
 
 <script type="text/javascript">
-function display() {
+function display()
+{
   var dept=$('#dept').val();
   var name=$('#name').val();
+  var tq= $('#tqselect option:selected').text();
+  var pun= $('#punselect option:selected').text();
 
-  console.log(`Name: ${name} Dept: ${dept}`);
+  console.log(`Name: ${name} Dept: ${dept} Teaching Quality: ${tq} Punctuality: ${pun}`);
 }
 </script>

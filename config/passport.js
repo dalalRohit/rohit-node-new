@@ -18,7 +18,7 @@ module.exports = function(passport){
 
       if(!user)
       {
-        return done(null, false);
+        return done(null, false,{message:"No user found!"} );
       }
 
       // Match Password
@@ -32,7 +32,7 @@ module.exports = function(passport){
         }
         else
         {
-          return done(null, false);
+          return done(null, false,{message:"Wrong password!"} );
         }
 
       });

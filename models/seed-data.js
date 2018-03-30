@@ -3,11 +3,12 @@ const {MongoClient}=require('mongodb');
 MongoClient.connect('mongodb://localhost:27017/nodedb',(err,client) => {
   var db = client.db('nodedb');
   db.collection('teachers').insertMany([
-    {name:'sample-teacher2',dept:'inft',code:101,designation:'Assistant professor',email:"sample-teacher2@vit.edu.in",subject:"Subject-1"},
-    {name:'sample-teacher1',dept:'inft',code:101,designation:'Assistant professor',email:"sample-teacher1@vit.edu.in",subject:"Subject-2"},
-    {name:'sample-teacher3',dept:'inft',code:101,designation:'Assistant professor',email:"sample-teacher3@vit.edu.in",subject:"Subject-3"},
-    {name:'sample-teacher4',dept:'inft',code:101,designation:'Assistant professor',email:"sample-teacher4@vit.edu.in",subject:"Subject-4"},
-    {name:'sample-teacher5',dept:'inft',code:101,designation:'Assistant professor',email:"sample-teacher5@vit.edu.in",subject:"Subject-5"},
+    {name:'sample-teacher2',dept:'inft',code:101,designation:'Assistant professor',email:"sample-teacher2@vit.edu.in",subject:"OS"},
+    {name:'sample-teacher1',dept:'inft',code:101,designation:'Assistant professor',email:"sample-teacher1@vit.edu.in",subject:"COA"},
+    {name:'sample-teacher3',dept:'inft',code:101,designation:'Assistant professor',email:"sample-teacher3@vit.edu.in",subject:"AT"},
+    {name:'sample-teacher4',dept:'inft',code:101,designation:'Assistant professor',email:"sample-teacher4@vit.edu.in",subject:"CN"},
+    {name:'sample-teacher5',dept:'inft',code:101,designation:'Assistant professor',email:"sample-teacher5@vit.edu.in",subject:"M4"},
+    {name:"sample-teacher6",dept:"inft",code:101,designation:'Assistant professor',email:"sample-teacher6@vit.edu.in",subject:"Python"},
 
     {name:'sample-teacher21',dept:'cmpn',code:100,designation:'Assistant professor',email:"sample-teacher21@vit.edu.in",subject:"Subject-6"},
     {name:'sample-teacher11',dept:'cmpn',code:100,designation:'Assistant professor',email:"sample-teacher11@vit.edu.in",subject:"Subject-7"},

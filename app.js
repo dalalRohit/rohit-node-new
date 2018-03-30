@@ -37,9 +37,27 @@ app.use('/users',users);
 app.set('views', path.join(__dirname, 'views'));
 app.use('/public',express.static(__dirname+'/public'));
 
+
+//passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
+//Express session MIDDLEWARE
+app.use(session({
+  secret: 'keyboard cat',
+  resave: true,
+  saveUninitialized: true
+}));
+
+// https://github.com/expressjs/express-messages/issues/13
+app.use(flash());
+app.use(function (req, res, next) {
+  res.locals.messages = require('express-messages')(req, res);
+  next();
+});
+
 // view engine
 hbs.registerPartials(__dirname+'/views/partials');
-// app.engine('hbs',hbs({extname:'hbs',layoutsDir: __dirname+'/views/layouts/'}));
 app.set('view engine', 'hbs');
 
 
@@ -57,10 +75,13 @@ app.get('/', (req,res) => {
 
 //passport config
 require('./config/passport')(passport);
+app.use(session({ cookie: { maxAge: 60000 },
+                  secret: 'woot',
+                  resave: false,
+                  saveUninitialized: true}));
 
-//passport middleware
-app.use(passport.initialize());
-app.use(passport.session());
+
+
 
 
 app.listen(port,() => {

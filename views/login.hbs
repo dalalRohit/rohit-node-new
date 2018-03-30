@@ -27,7 +27,29 @@
             <input name="password"type="password" id="inputPassword" class="form-control" placeholder="Password" required>
 
         </div>
-        <button class="btn btn-lg btn-primary btn-block" type="submit" style="margin-top:25px;">Sign in</button>
+        <button class="btn btn-lg btn-primary btn-block"  id="mybtn" onclick="loadToken()" type="submit" style="margin-top:25px;">Sign in</button>
         <p class="mt-5 mb-3 text-muted text-center">&copy; 2017-2018</p>
     </form>
 </div>
+
+<script type="text/javascript">
+  var btn=document.getElementById('mybtn').addEventListener('click',loadToken);
+
+  function loadToken()
+  {
+      var xhr=new XMLHttpRequest();
+
+      xhr.open('GET','http://localhost:3000/users/me',true);
+
+      xhr.onload-function() {
+        if(this.status==200)
+        {
+          var token=JSON.parse(this.responseText);
+
+          console.log(token);
+        }
+      }
+
+      xhr.send();
+  }
+</script>

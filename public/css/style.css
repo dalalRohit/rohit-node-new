@@ -34,3 +34,7 @@ li{
   color: pink;
   text-decoration: none;
 }
+
+#submit{
+  margin-bottom: 10px;
+}

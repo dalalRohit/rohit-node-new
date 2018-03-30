@@ -14,12 +14,6 @@
   <b>Note: </b> <h5>Click on the teacher's name to give feedback!</h5>
 </div>
 
-<!-- {{#if roll}}
-<h2>Roll details:</h2>
-  {{#each roll}}
-    {{this}}
-  {{/each}}
-{{/if}} -->
 
 {{#if token}}
   {{token}}
@@ -33,7 +27,7 @@
   <div class="teachers">
     <div class="names">
       {{#each teachers}}
-        <li> <a href="/users/give-feedback" onclick="">{{this}}</a> </li> <br />
+        <li> <a href="/users/give-feedback" id="name" onclick="passName()">{{this}}</a> </li> <br />
       {{/each}}
     </div>
     <div class="subjects">
@@ -48,33 +42,13 @@
     </div>
   </div>
 {{/if}}
-<!--
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Subject</th>
-        <th>Designation</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>{{teachers}}</td>
-        <td>Doe</td>
-        <td>john@example.com</td>
-      </tr>
-      <tr>
-        <td>Mary</td>
-        <td>Moe</td>
-        <td>mary@example.com</td>
-      </tr>
-      <tr>
-        <td>July</td>
-        <td>Dooley</td>
-        <td>july@example.com</td>
-      </tr>
-    </tbody>
-  </table>
-  -->
+
 
 </div>
+
+<script type="text/javascript">
+  function passName()
+  {
+    console.log(document.getElementById('name').val);
+  }
+</script>

@@ -9,33 +9,56 @@ const bcrypt=require('bcryptjs');
 const jwt=require('jsonwebtoken');
 const axios=require('axios');
 const request=require('request');
-const passport = require('passport');
 const flash    = require('connect-flash');
 const nodemailer=require('nodemailer');
+const session=require('express-session');
+var passport = require('passport')
+  , LocalStrategy = require('passport-local').Strategy;
 
+// const localstorage=require('localstorage');
 
+//############################BODY-PARSER(MDN_DOCS)############################
 const { check, } = require('express-validator/check');
 const { matchedData, sanitize } = require('express-validator/filter');
 const { body,validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 
 
+// ############################AUTHENTICATION MIDDLEWARE###############################
 var {authenticate}=require('./../middleware/authenticate');
 
-
-//app setup
+//Models
+//############################app setup############################
 var app=express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/public',express.static(__dirname+'/public'));
 
+//Express session MIDDLEWARE
+app.use(session({
+  secret: 'keyboard cat',
+  resave: true,
+  saveUninitialized: true
+}));
 
-//Models
+// https://github.com/expressjs/express-messages/issues/13
+app.use(flash());
+app.use(function (req, res, next) {
+  res.locals.messages = require('express-messages')(req, res);
+  next();
+});
+//############################Models############################
 let User=require('../models/user');
 let Teacher=require('../models/teacher');
 
-//body-parser middleware
+//############################body-parser middleware############################
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+//############################PAssport middleware############################
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use(flash());
 
 //############################## PAGE GETTERS ##################################
 //GET /users/login
@@ -99,14 +122,23 @@ app.post('/register',[
             return user.generateAuthToken();
           })
           .then( (token) => {
+
             res.header('x-auth',token);
-            res.render('login',{
-              pageTitle:"Login page",
-              success:true,
-              msg:"You're now registered!"});
+            req.flash('success','You are now registered!');
+
+            // res.render('login',{
+            //   pageTitle:"Login page",
+            //   msg:req.flash('success')
+            // });
+
+            res.redirect('/users/login');
           })
           .catch( (err) => {
-            res.status(400).send("Something went wrong!!");
+            req.flash('danger','Something went wrong!');
+            res.render('register',{
+              msg:req.flash('danger'),
+              pageTitle:"Register page"
+            })
           });
       })
     });
@@ -123,7 +155,6 @@ app.post('/login',(req,res)=> {
 
     return user.generateAuthToken().then( (token) => {
       res.header('x-auth',token);
-
 
       //splitting of roll no in dept,div,year,no
       var roll=user.splitRoll(user.loginid);
@@ -144,11 +175,12 @@ app.post('/login',(req,res)=> {
           sub.push(teachers[i].subject);
         }
         var details={fac,sub,des};
+        req.details={fac,sub,des};
 
-        console.log('Token here',token);
-
+        //console.log('Token here',token);
+        res.header('x-auth',token);
+        req.flash('success','You are now logged in!');
         res.status(200).render('dashboard',{
-          success:true,
           pageTitle:"Dashboard",
           msg:"You're now logged in!",
           user,
@@ -159,6 +191,7 @@ app.post('/login',(req,res)=> {
           token
         });
 
+        // res.redirect('/users/');
       }).catch( (err) => {
         res.status(400).send();
       });
@@ -167,7 +200,10 @@ app.post('/login',(req,res)=> {
 
 
     });
-  }).catch( (err) => {
+    req.user=user;
+    console.log(req.user);
+  })
+  .catch( (err) => {
     res.status(400).render('login',{
       pageTitle:"Login page",
       error:"No user found! Check credentials once!"
@@ -176,6 +212,7 @@ app.post('/login',(req,res)=> {
 
 
 });
+
 
 // DELETE /users/logout
 app.delete('/logout',authenticate, function(req, res){
@@ -188,53 +225,63 @@ req.user.removeToken(req.token).then( () => {
 
 });
 
-// var passToken=function (req,res,next)
-// {
-//   req.headers={
-//     'x-auth':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1YWE3YTViZDVjM2ZiMDI4Y2MzNmQ5ODciLCJhY2Nlc3MiOiJhdXRoIiwiaWF0IjoxNTIwOTM2Mzk5fQ.I4cQ8QFvgR9FTE3e_2zpgfNFD-Qv0zKuCkAxxjsWtJU'
-//   };
-//
-//   next();
-// }
+// ############################ PASSTOKEN MIDDLEWARE ############################
+var passToken=function (req,res,next)
+{ console.log(req.token);
+  // req.headers={
+  //   'x-auth':localstorage.getItem('token')
+  // };
+
+  next();
+}
+
+
 //############################PRIVATE ROUTES #################################
 //GET /
 app.get('/',authenticate,(req,res) => {
-  console.log(req.body.token);
-  res.render('dashboard',{success:true,
-  pageTitle:"Dashboard",
-  user:req.user,
-  roll:req.roll,
-  teachers:req.teachers,
+  console.log(`req.details: ${req.details}`);
+  res.render('dashboard',{
+    pageTitle:"Dashboard",
+    user:req.user,
+    roll:req.roll,
+    teachers:req.details,
   }
   );
 });
 
 //GET /users/give-feedback
-app.get('/give-feedback',(req,res) => {
+app.get('/give-feedback',authenticate,(req,res) => {
   res.render('feed',{
     success:true,
     user:req.user,
     roll:req.roll,
-    pageTitle:"Submit feedback page",
-    teacher:"Sampleteacher1",
+    pageTitle:"Submit feedback page"
 
   });
 });
 
 //GET /users/Submit
 app.get('/submit',authenticate,(req,res) => {
-
   res.render('submit',{
     pageTitle:"Succesfull",
-    success:true,
     user:req.user,
     roll:req.roll
   });
 
 });
 
+
+//POST /users/verify
+app.post('/verify',authenticate,(req,res) => {
+  res.render('submit',{
+    pageTitle:"Succesful",
+    user:req.user,
+    success:true
+  })
+});
+
 //POST /users/submit
-app.post('/submit',[
+app.post('/submit',authenticate,[
   check('name',"NAME-Input here is must!").isLength({min:1}),
   // check('subject',"SUBJECT-Input here is must!").isLength({min:1}),
   check('dept',"DEPARTMENT-Input here is must!").isLength({min:1}),
@@ -253,24 +300,32 @@ app.post('/submit',[
 
 
   const name=req.body.name;
-
   const dept=req.body.dept;
+  const tq=req.body.tqselect;
+  const pun=req.body.punselect;
 
-  console.log(`Responses are : ${name}  ${dept}`);
+  console.log(`Responses are : ${name}  ${dept} ${tq} ${pun}` );
 
-  const output=`
-  <p>You have a new feedback!</p>
 
-  <h3>Feedback details</h3>
+//##############################################################################
+  const output=`<div class="container-fluid">
+    <p>You have a new feedback!</p>
 
-  <ul>
-    <li>Teaching quality : ${req.body.tq}</li>
-    <li>Punctuality : ${req.body.pun}</li>
-  </ul> `;
-  // Generate test SMTP service account from ethereal.email
-// Only needed if you don't have a real mail account for testing
+    <h3>Feedback details</h3>
+
+    <ul>
+      <li>Teaching quality : ${tq}</li>
+      <li>Punctuality : ${pun}</li>
+    </ul>
+  </div>`;
+
+//#############################################MAILING SCRIPT#####################################
 nodemailer.createTestAccount((err, account) => {
     // create reusable transporter object using the default SMTP transport
+    if (err)
+    {
+        res.status(500).send(err);
+    }
     let transporter = nodemailer.createTransport({
         service:'gmail',
         // host: 'smtp.ethereal.email',
@@ -296,7 +351,8 @@ nodemailer.createTestAccount((err, account) => {
 
     // send mail with defined transport object
     transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
+        if (error)
+        {
             return console.log(error);
         }
         console.log('Message sent: %s', info.messageId);
@@ -308,15 +364,17 @@ nodemailer.createTestAccount((err, account) => {
     });
 });
 
-  res.redirect('/users/submit');
-
-
+  res.render('feed',{
+    msg:"Feedback is succesfully sent!",
+    pageTitle:"Submitted succesfully",
+    user:req.user
+  });
 });
 
 
 // GET /users/teachers
 app.get('/teachers',authenticate,(req,res) => {
-  res.render('teachers',{success:true,
+  res.render('teachers',{
   pageTitle:"Teachers page",
   user:req.user,
   teachers:req.teachers});
@@ -341,7 +399,6 @@ app.get('/feedback',authenticate,(req,res) => {
 
   res.render('feedback',{
     pageTitle:"Feedback page",
-    success:true,
     user:req.user,
     teachers:req.teachers
 
@@ -364,10 +421,8 @@ app.delete('/me/token',authenticate,(req,res)=> {
 
 //private routes
 app.get('/me',authenticate,(req,res)=> {
-  res.send(req.user.tokens[1].token);
-  req.headers={
-    'x-auth':req.user.tokens[1].token
-  };
+  res.json(req.user.tokens);
+
 });
 
 module.exports=app;
