@@ -270,6 +270,19 @@ app.get('/submit',authenticate,(req,res) => {
 
 });
 
+//GET /users/verify
+app.get('/verify',authenticate,(req,res) => {
+  res.render('verify',{
+    pageTitle:"Verify page",
+    user:req.user,
+    success:true
+  });
+});
+
+//POST /users/verify
+app.post('/verify',authenticate,(req,res) => {
+  return res.send("HRLLO");
+});
 
 //POST /users/verify
 app.post('/verify',authenticate,(req,res) => {

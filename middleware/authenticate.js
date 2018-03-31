@@ -5,7 +5,7 @@ var authenticate=function (req,res,next)
 {
   // console.log(req);
   req.headers={
-    'x-auth':"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1YWJkZDYyZTdjMjA5NDBhNmMxN2M0ZjYiLCJhY2Nlc3MiOiJhdXRoIiwiaWF0IjoxNTIyMzkwNTkyfQ.uPQHOqwSNahX6xvtHwTJXZXKIh0VhI9IlzOLIF0wE6o"
+    'x-auth':"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1YWJmMGI5NjNkMmFlMDI4MzQyOTIyYTIiLCJhY2Nlc3MiOiJhdXRoIiwiaWF0IjoxNTIyNDY5Nzg1fQ.sCQb0FW4mEVvYIGLZh7ruPpDcLAx62bH4ZDSn0Zhj4w"
   }
 
   var token= req.body.token || req.query.token || req.header('x-auth');

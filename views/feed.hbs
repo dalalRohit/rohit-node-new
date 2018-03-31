@@ -38,16 +38,19 @@
             <h3 style="margin-bottom: 25px; text-align: center;">Feedback Form</h3>
 
             <div class="form-group">
-              <label for="sel1">Select list:</label>
-              <select class="form-control" id="sel1">
-                <option>Subject-1</option>
-                <option>Subject-2</option>
-                <option>Subject-3</option>
-                <option>Subject-4</option>
-                <option>Subject-5</option>
-                <option>Subject-6</option>
+              <label id="semester" for="sem">Semester</label>(2/4/6/8)
+              <p id="result"></p>
+						   <input type="number" minLength="1" min="2" max="8" class="form-control" id="sem" name="sem"  >
 
-              </select>
+
+            </div>
+
+            <div class="form-group">
+              <label id="sub" for="subject">Subject</label>
+              <p class="alert" id="subResult">
+
+              </p>
+						   <input type="text" class="form-control" id="subject" name="subject" >
             </div>
 
     				<div class="form-group">
@@ -57,47 +60,28 @@
 
           <div class="form-group">
             <label>Department</label>
-            <input type="text" class="form-control" id="dept" name="dept" value="Department" required>
+            <input type="text" class="form-control" id="dept" name="dept" placeholder="Department" required>
           </div>
 
-          <div class="form-group">
-            <label>Designation</label>
-            <input type="text" class="form-control" id="des" name="des" value="Designation" required>
 
-          </div>
 
         <div class="form-group" >
-          <label>Teaching quality</label>
-          <div class="form-group" >
-              <select class="form-control" id="tqselect">
-                <option value="Excellent" selected="selected">Excellent</option>
-                <option value="Very Good">Very Good</option>
-                <option value="Good">Good</option>
-                <option value="Poor">Poor</option>
-              </select>
-          </div>
+          <label>Teaching quality</label>(Rate it out of 0-4 scale)
+          <input type="text" class="form-control" id="tq" name="tq" placeholder="Teaching quality" />
         <hr />
 
         <div class="form-group">
-          <label>Punctuality</label>
-          <!-- <input type="text" class="form-control" id="pun" name="pun" placeholder="Punctuality" required> -->
-          <div class="form-group" >
-              <select class="form-control" id="punselect">
-                <option value="Excellent">Excellent</option>
-                <option value="Very Good">Very Good</option>
-                <option value="Good">Good</option>
-                <option value="Poor">Poor</option>
-              </select>
-          </div>
+          <label>Punctuality</label>(Rate it out of 0-4 scale)
+          <input type="text" class="form-control" id="pun" name="pun" placeholder="Punctuality">
         <hr />
 
       </div>
 
-      <button type="submit" id="submit" formaction="/users/verify" name="verify" class="btn btn-primary pull-right">Verify Form</button> <br />
+      <!-- <button type="submit" id="verify"  onclick="verifyData()" name="verify" class="btn btn-primary pull-right">Verify Form</button> <br /> -->
 
 
 
-      <button type="submit" id="verify" formaction="/users/submit" onclick="display()" id="submit" name="submit" class="btn btn-primary pull-right" disabled>Submit Form</button>
+      <button type="submit" id="submit" onclick="display()" id="submit" name="submit" class="btn btn-primary pull-right" >Submit Form</button>
 
         </form>
     </div>
@@ -107,13 +91,75 @@
 </div>
 
 <script type="text/javascript">
+var subjects=[];
 function display()
 {
+  var sem=$('#sem').val();
   var dept=$('#dept').val();
   var name=$('#name').val();
-  var tq= $('#tqselect option:selected').text();
-  var pun= $('#punselect option:selected').text();
+  var tq= $('#tq').val();
+  var pun= $('#pun').val();
 
-  console.log(`Name: ${name} Dept: ${dept} Teaching Quality: ${tq} Punctuality: ${pun}`);
+  console.log(`Sem: ${sem} Name: ${name} Dept: ${dept} Teaching Quality: ${tq} Punctuality: ${pun}`);
 }
+
+//--------------------------------- 1) CHECKSEM------------------------------------
+var sem=document.getElementById('sem');
+sem.addEventListener('mouseout',checkSem);
+
+
+//FUNCTION TO ADD SUBJECTS ACCORDING TO THE SEMESTER ENTERED(2,4,6,8)
+function addSub(subjects)
+{
+  for(var i=1;i<=6;i++)
+  {
+    this.subjects.pop();
+  }
+
+  if(this.subjects.length == 0)
+  {
+    this.subjects.push(sub);
+    this.subjects.sort();
+    console.log(subjects);
+  }
+  else
+  {
+    console.log(`Subjects not empty! ${subjects.length}`);
+  }
+}
+
+function checkSem()
+{
+    document.getElementById('result').innerHTML="";
+    //  document.getElementById('sem').style.border="1px solid black";
+  if(sem.value==2)
+  {
+    var sub=['Applied Maths-2','SPA','ED','AP2','AC2','CS'];
+    addSub(sub);
+    document.getElementById('sem').style.border="2px solid green";
+  }
+  else if (sem.value==4)
+  {
+    var sub=["AT", "Applied Maths-4", "CN", "COA", "OS", "Python"];
+    addSub(sub);
+    document.getElementById('sem').style.border="2px solid green";
+  }
+  else
+  {
+    document.getElementById('result').innerHTML="<h4>Not a valid semester!</h4>"
+    document.getElementById('sem').style.border="2px solid red";
+  }
+}
+
+//------------------------------ 2) CHECKSUB --------------------------
+var sub=document.getElementById('subject');
+sub.addEventListener('mouseout',checkSub);
+
+function checkSub()
+{
+  // console.log(sub.value);
+  // console.log(`In checkSub(): ${subjects}`);
+}
+
+
 </script>
