@@ -40,7 +40,7 @@
             <div class="form-group">
               <label id="semester" for="sem">Semester</label>(2/4/6/8)
               <p id="result"></p>
-						   <input type="number" minLength="1" min="2" max="8" class="form-control" id="sem" name="sem"  >
+						   <input type="number" minLength="1" min="2" max="8" class="form-control" id="sem" name="sem" onmouseout="checkSem()" >
 
 
             </div>
@@ -50,7 +50,7 @@
               <p class="alert" id="subResult">
 
               </p>
-						   <input type="text" class="form-control" id="subject" name="subject" >
+						   <input type="text" class="form-control" id="subject" name="subject" onmouseout="checkSub()">
             </div>
 
     				<div class="form-group">
@@ -104,8 +104,8 @@ function display()
 }
 
 //--------------------------------- 1) CHECKSEM------------------------------------
-var sem=document.getElementById('sem');
-sem.addEventListener('mouseout',checkSem);
+ var sem=document.getElementById('sem');
+// sem.addEventListener('mouseout',checkSem);
 
 
 //FUNCTION TO ADD SUBJECTS ACCORDING TO THE SEMESTER ENTERED(2,4,6,8)
@@ -152,13 +152,14 @@ function checkSem()
 }
 
 //------------------------------ 2) CHECKSUB --------------------------
-var sub=document.getElementById('subject');
-sub.addEventListener('mouseout',checkSub);
+ var sub=document.getElementById('subject');
+// sub.addEventListener('mouseout',checkSub);
 
 function checkSub()
 {
   // console.log(sub.value);
   // console.log(`In checkSub(): ${subjects}`);
+  console.log(subjects.length);
 }
 
 
