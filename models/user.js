@@ -96,6 +96,32 @@ var UserSchema=new mongoose.Schema({
    });
 }
 
+UserSchema.statics.giveToken=function (loginid)
+{
+  var User=this;
+   return User.findOne({loginid}).then( (user) => {
+     //console.log(`User found!: ${user}`);
+    if(!user)
+    {
+      return Promise.reject();
+    }
+
+    // return new Promise( (resolve,reject) => {
+    //
+    // })
+    console.log(`User LoginID: ${user.loginid}`);
+    console.log('Token here:',user.tokens[1].token)
+     var token= user.tokens[1].token;
+      return token;
+
+
+  });
+
+  // console.log(`User LoginID: OUTSIDE ${user.loginid}`);
+  // console.log('Token here: OUTSIDE',user.tokens[1].token)
+}
+
+
 //for DELETE /users/token/me
 UserSchema.methods.removeToken= function (token) {
   var user=this;

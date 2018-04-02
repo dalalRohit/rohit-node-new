@@ -227,10 +227,11 @@ req.user.removeToken(req.token).then( () => {
 
 // ############################ PASSTOKEN MIDDLEWARE ############################
 var passToken=function (req,res,next)
-{ console.log(req.token);
-  // req.headers={
-  //   'x-auth':localstorage.getItem('token')
-  // };
+{
+  // console.log(`Loginid of req.user: ${req.user.loginid}`);
+  req.headers={
+    'x-auth':User.giveToken('16101b0035')
+  };
 
   next();
 }
@@ -238,7 +239,7 @@ var passToken=function (req,res,next)
 
 //############################PRIVATE ROUTES #################################
 //GET /
-app.get('/',authenticate,(req,res) => {
+app.get('/',passToken,authenticate,(req,res) => {
   console.log(`req.details: ${req.details}`);
   res.render('dashboard',{
     pageTitle:"Dashboard",
@@ -250,7 +251,7 @@ app.get('/',authenticate,(req,res) => {
 });
 
 //GET /users/give-feedback
-app.get('/give-feedback',authenticate,(req,res) => {
+app.get('/give-feedback',passToken,authenticate,(req,res) => {
   res.render('feed',{
     success:true,
     user:req.user,
@@ -279,10 +280,6 @@ app.get('/verify',authenticate,(req,res) => {
   });
 });
 
-//POST /users/verify
-app.post('/verify',authenticate,(req,res) => {
-  return res.send("HRLLO");
-});
 
 //POST /users/verify
 app.post('/verify',authenticate,(req,res) => {
@@ -294,7 +291,7 @@ app.post('/verify',authenticate,(req,res) => {
 });
 
 //POST /users/submit
-app.post('/submit',authenticate,[
+app.post('/submit',passToken,authenticate,[
   check('name',"NAME-Input here is must!").isLength({min:1}),
   // check('subject',"SUBJECT-Input here is must!").isLength({min:1}),
   check('dept',"DEPARTMENT-Input here is must!").isLength({min:1}),
@@ -386,7 +383,7 @@ nodemailer.createTestAccount((err, account) => {
 
 
 // GET /users/teachers
-app.get('/teachers',authenticate,(req,res) => {
+app.get('/teachers',passToken,authenticate,(req,res) => {
   res.render('teachers',{
   pageTitle:"Teachers page",
   user:req.user,
@@ -394,7 +391,7 @@ app.get('/teachers',authenticate,(req,res) => {
 });
 
 //GET /users/logout
-app.get('/logout',authenticate,(req,res)=> {
+app.get('/logout',passToken,authenticate,(req,res)=> {
 
   //udemy logout logic
   req.user.removeToken(req.token).then( () => {
@@ -407,7 +404,7 @@ app.get('/logout',authenticate,(req,res)=> {
 });
 
 //GET /users/feedback
-app.get('/feedback',authenticate,(req,res) => {
+app.get('/feedback',passToken,authenticate,(req,res) => {
 
 
   res.render('feedback',{
@@ -422,7 +419,7 @@ app.get('/feedback',authenticate,(req,res) => {
 
 //EXTRA UDEMY ROUTE
 // DELETE /users/me/token
-app.delete('/me/token',authenticate,(req,res)=> {
+app.delete('/me/token',passToken,authenticate,(req,res)=> {
 
   req.user.removeToken(req.token).then( () => {
     res.status(200).send();
@@ -433,7 +430,7 @@ app.delete('/me/token',authenticate,(req,res)=> {
 });
 
 //private routes
-app.get('/me',authenticate,(req,res)=> {
+app.get('/me',passToken,authenticate,(req,res)=> {
   res.json(req.user.tokens);
 
 });
